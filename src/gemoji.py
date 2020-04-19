@@ -1,4 +1,5 @@
-"https://raw.githubusercontent.com/github/gemoji/master/db/emoji.json"
+__author__ = "Sergio Chairez"
+
 
 import json
 import urllib.request
@@ -10,4 +11,5 @@ if __name__ == "__main__":
     with urllib.request.urlopen(req) as response:
         js = json.loads(response.read())
 
-    print(js[0])
+    for i in js[:10]:
+        print(i['emoji'], i['aliases'][0])
