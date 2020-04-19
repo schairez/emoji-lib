@@ -1,12 +1,18 @@
+# -*- coding: UTF-8 -*-
+
 __author__ = "Sergio Chairez"
 
 
 import json
+import re
 import requests
 import urllib.request
 import urllib.error
+import codecs
+
 from bs4 import BeautifulSoup
-# from typing import Union
+from pprint import pprint
+from typing import Dict
 
 
 FULL_EMOJI_LIST_URL = "http://unicode.org/emoji/charts-13.0/full-emoji-list.html#1f3f4_e0067_e0062_e0073_e0063_e0074_e007f"
@@ -17,7 +23,7 @@ def get_emoji_html_data(url: str) -> str:
     req = urllib.request.Request(FULL_EMOJI_LIST_URL)
     with urllib.request.urlopen(req) as response:
         try:
-            req_html_str = response.read().decode("UTF-8")
+            req_html_str = response.read().decode()
             return req_html_str
 
         except urllib.error.URLError as e:
@@ -38,7 +44,7 @@ def req_emoji_html_data(url: str) -> str:
         print("ERROR", return_request.status_code)
 
 
-def wrangle_emoji_html_soup(html_data: str):
+def wrangle_emoji_html_soup(html_data: str) -> Dict:
     soup = BeautifulSoup(html_data, "html.parser")
     # l_data = []
     d = {}
@@ -47,7 +53,8 @@ def wrangle_emoji_html_soup(html_data: str):
         if row.find("th"):
             continue
 
-        emoji_glyph = row.find("td", attrs={"class": "chars"}).text
+        # print(codecs.decode())
+        emoji_glyph = repr(row.find("td", attrs={"class": "chars"}).text)
         short_name = row.find(
             "td", attrs={"class": "name"}).text.replace('"', '')
         unicode_code_point = row.find("td", attrs={"class": "code"}).text
@@ -56,6 +63,13 @@ def wrangle_emoji_html_soup(html_data: str):
     return d
 
 
+def write_json_file(output_file, d):
+    with open(output_file, "w") as write_json:
+        json.dump(d, write_json, indent=2,
+                  sort_keys=False,  ensure_ascii=False)
+
+
 if __name__ == "__main__":
     d = wrangle_emoji_html_soup(req_emoji_html_data(FULL_EMOJI_LIST_URL))
-    print(d['farmer'])
+    write_json_file("emojis.json", d)
+    # print(d['farmer'])
