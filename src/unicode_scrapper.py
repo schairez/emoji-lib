@@ -52,13 +52,12 @@ def wrangle_emoji_html_soup(html_data: str) -> Dict:
         # go to next loop iteration if th tag in tr
         if row.find("th"):
             continue
-
-        # print(codecs.decode())
         emoji_glyph = row.find("td", attrs={"class": "chars"}).text
         short_name = row.find(
             "td", attrs={"class": "name"}).text.replace('"', '')
         unicode_code_point = row.find("td", attrs={"class": "code"}).text
-        d[short_name] = emoji_glyph
+        key = "_".join(short_name.split(" "))
+        d[key] = emoji_glyph
 
     return d
 
