@@ -54,7 +54,7 @@ def wrangle_emoji_html_soup(html_data: str) -> Dict:
             continue
 
         # print(codecs.decode())
-        emoji_glyph = repr(row.find("td", attrs={"class": "chars"}).text)
+        emoji_glyph = row.find("td", attrs={"class": "chars"}).text
         short_name = row.find(
             "td", attrs={"class": "name"}).text.replace('"', '')
         unicode_code_point = row.find("td", attrs={"class": "code"}).text
