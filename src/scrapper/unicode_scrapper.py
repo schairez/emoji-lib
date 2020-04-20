@@ -8,8 +8,7 @@ import re
 import requests
 import urllib.request
 import urllib.error
-import codecs
-
+import os
 from bs4 import BeautifulSoup
 from pprint import pprint
 from typing import Dict
@@ -46,7 +45,6 @@ def req_emoji_html_data(url: str) -> str:
 
 def wrangle_emoji_html_soup(html_data: str) -> Dict:
     soup = BeautifulSoup(html_data, "html.parser")
-    # l_data = []
     d = {}
     for row in soup.find_all("tr"):
         # go to next loop iteration if th tag in tr
@@ -54,8 +52,8 @@ def wrangle_emoji_html_soup(html_data: str) -> Dict:
             continue
         emoji_glyph = row.find("td", attrs={"class": "chars"}).text
         short_name = row.find(
-            "td", attrs={"class": "name"}).text.replace('"', '')
-        unicode_code_point = row.find("td", attrs={"class": "code"}).text
+            "td", attrs={"class": "name"}).text.replace('"', '').replace("⊛", "").strip()
+        # unicode_code_point = row.find("td", attrs={"class": "code"}).text.lower()
         key = "_".join(short_name.split(" "))
         d[key] = emoji_glyph
 
@@ -63,7 +61,9 @@ def wrangle_emoji_html_soup(html_data: str) -> Dict:
 
 
 def write_json_file(output_file, d):
-    with open(output_file, "w") as write_json:
+    # with open(output_file, "w") as write_json:
+    with open(os.path.join(os.pardir, output_file), "w") as write_json:
+
         json.dump(d, write_json, indent=2,
                   sort_keys=False,  ensure_ascii=False)
 
